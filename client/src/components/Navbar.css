@@ -1,0 +1,17 @@
+.Navbar {
+    margin:15px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: start;
+}
+
+#logo {
+    width: 5rem;
+    cursor: pointer;
+}
+
+#tic-tac-toe {
+    margin: 0px 10px;
+    cursor: pointer;
+}
