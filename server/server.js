@@ -14,9 +14,7 @@ const Room = require("./models/room.model");
 
 app.use(cors());
 
-const bodyParser = require("body-parser");
-
-var jsonParser = bodyParser.json();
+app.use(express.json());
 
 connect();
 
@@ -25,9 +23,10 @@ app.get("/createRoom", (req,res) => {
     //Generate unique id for each room
 
     const alphabets = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
-    'h', 'i', 'j', 'k', 'l', 'm', 'n',
-    'o', 'p', 'q', 'r', 's', 't', 'u',
-    'v', 'w', 'x', 'y', 'z'];
+                        'h', 'i', 'j', 'k', 'l', 'm', 'n',
+                        'o', 'p', 'q', 'r', 's', 't', 'u',
+                        'v', 'w', 'x', 'y', 'z',
+                        '0','1','2','3','4','5','6','7','8','9'];
 
     let result = "";
 
@@ -45,7 +44,7 @@ app.get("/createRoom", (req,res) => {
     })
 })
 
-app.post("/joinRoom", jsonParser, async(req,res) => {
+app.post("/joinRoom", async(req,res) => {
     // Check whether room exists or not
     const room_id = req.body.room_id;
     const room = await Room.findOne({uID:room_id})
