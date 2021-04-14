@@ -2,6 +2,10 @@ const express = require("express");
 
 const app = express();
 
+const http = require("http").Server(app);
+
+const io = require("socket.io")(http);
+
 const cors = require("cors");
 
 const connect = require("./config/db");
@@ -44,7 +48,7 @@ app.get("/createRoom", (req,res) => {
 app.post("/joinRoom", jsonParser, async(req,res) => {
     // Check whether room exists or not
     const room_id = req.body.room_id;
-    const room = await Room.findOne({uID:room_id}).then((response) => res.status(200).json({status:"success", message:"room exists"}))
+    const room = await Room.findOne({uID:room_id})
     .catch((err) => res.status(404).json({status:"failed",message:"Error while checking room"+err}))
 
     if(room) {
@@ -60,6 +64,48 @@ app.post("/joinRoom", jsonParser, async(req,res) => {
     else {
         res.status(400).json({Error:"Enter valid room Id"});
     }
+});
+
+// open socket io connection
+io.on('connection', (socket) => {
+    //user joining room using registered room id
+    socket.on('join', async room_id => {
+        console.log('user joined', room_id);
+        socket.join(room_id);
+
+        const room = await Room.findOne({uID:room_id})
+        .then((res) => { 
+            console.log("Joining room successful"+res); 
+        })
+        .catch((err) => {
+            console.log('Error occured while joining the room', err);
+        });
+
+        if(room && room.noOfUser === 2) {
+            io.to(room_id).emit('You can play now');
+        }
+    })
+
+    // Incoming message from chat
+    socket.on('sendMessage', async({message, name, user_id, room_id}) => {
+        const payload = {
+            name,user_id,room_id,message
+        }
+
+        io.to(room_id).emit("messageReceived", payload);
+    })
+
+    socket.on('Clicked', ({id, name, user_id, room}) => {
+        const stranger = {
+            id,name,user_id,room_id
+        }
+        console.log(`${name} clicked ${id} square in room ${room_id}`);
+        io.to(room_id).emit('clickReceived', click);
+    })
+
+    socket.on('playAgain', room_id => {
+        io.to(room_id).emit('Play again')
+    })
 })
 
 app.listen(5000, () => {
