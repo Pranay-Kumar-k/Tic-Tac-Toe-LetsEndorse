@@ -12,8 +12,17 @@ export default function Home() {
     //     history.push("/");
     // }
     return (
-        <div>
-            Home
+        <div className="Home">
+            Hello {user && user.name}
+            <div className="Error">{error}</div>
+            <form onSubmit={joinRoom} id="room">
+                <input type="text" 
+                        value={room} 
+                        onChange={(e) => {setError(""); setRoom(e.target.value)}}
+                        id="join-room"
+                        placeholder="Enter room Id" />
+                <button>Join Room</button>
+            </form>
         </div>
     )
 }
