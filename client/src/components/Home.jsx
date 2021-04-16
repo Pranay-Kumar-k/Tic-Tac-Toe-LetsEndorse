@@ -11,6 +11,19 @@ export default function Home() {
     // if(user === null) {
     //     history.push("/");
     // }
+    
+    const joinRoom = () => {
+        
+    }
+    
+    const generateUniqueId = () => {
+        axios.get("http://localhost:5000/createRoom")
+        .then((res) => {
+            history.push("/play"+res.data);
+        })
+    }
+
+    
     return (
         <div className="Home">
             Hello {user && user.name}
@@ -23,6 +36,8 @@ export default function Home() {
                         placeholder="Enter room Id" />
                 <button>Join Room</button>
             </form>
+            <div>OR</div>
+            <button className="input-button" onClick={generateUniqueId}>Create Room</button>
         </div>
     )
 }
