@@ -57,7 +57,7 @@ app.post("/joinRoom", async(req,res) => {
             res.status(201).json({player});
         }
         else {
-            res.status(200).json({Error:"Room is full, Try after some time"});
+            res.status(400).json({Error:"Room is full, Try after some time"});
         }
     }
     else {

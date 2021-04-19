@@ -5,6 +5,7 @@ import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 import Home from "./components/Home";
 import Navbar from "./components/Navbar";
 import Play from "./components/Play/Play";
+import UserAuth from "./components/Auth/UserAuth";
 
 function App() {
   const [user,setUser] = React.useState(null);
@@ -15,7 +16,8 @@ function App() {
           <Navbar />
           <Switch>
             <Route exact path="/" component={Home} />
-            <Route exact path="/play" component={Play} />
+            <Route exact path="/play/:id" component={Play} />
+            <Route exact path="/player" component={UserAuth} />
           </Switch>
         </UserContext.Provider>
       </div>
