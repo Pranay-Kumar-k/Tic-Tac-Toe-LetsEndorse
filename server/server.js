@@ -46,8 +46,8 @@ app.get("/createRoom", (req,res) => {
 
 app.post("/joinRoom", async(req,res) => {
     // Check whether room exists or not
-    const room_id = req.body.room_id;
-    const room = await Room.findOne({uID:room_id})
+    const room = req.body.room;
+    const room = await Room.findOne({uID:room})
     .catch((err) => res.status(404).json({status:"failed",message:"Error while checking room"+err}))
 
     if(room) {
@@ -68,11 +68,11 @@ app.post("/joinRoom", async(req,res) => {
 // open socket io connection
 io.on('connection', (socket) => {
     //user joining room using registered room id
-    socket.on('join', async room_id => {
-        console.log('user joined', room_id);
-        socket.join(room_id);
+    socket.on('join', async room => {
+        console.log('user joined', room);
+        socket.join(room);
 
-        const room = await Room.findOne({uID:room_id})
+        const room = await Room.findOne({uID:room})
         .then((res) => { 
             console.log("Joining room successful"+res); 
         })
@@ -81,29 +81,29 @@ io.on('connection', (socket) => {
         });
 
         if(room && room.noOfUser === 2) {
-            io.to(room_id).emit('You can play now');
+            io.to(room).emit('You can play now');
         }
     })
 
     // Incoming message from chat
-    socket.on('sendMessage', async({message, name, user_id, room_id}) => {
+    socket.on('sendMessage', async({message, name, user_id, room}) => {
         const payload = {
-            name,user_id,room_id,message
+            name,user_id,room,message
         }
 
-        io.to(room_id).emit("messageReceived", payload);
+        io.to(room).emit("messageReceived", payload);
     })
 
-    socket.on('Clicked', ({id, name, user_id, room}) => {
+    socket.on('Clicked', ({i, name, user_id, room}) => {
         const stranger = {
-            id,name,user_id,room_id
+            i,name,user_id,room
         }
-        console.log(`${name} clicked ${id} square in room ${room_id}`);
-        io.to(room_id).emit('clickReceived', click);
+        console.log(`${name} clicked ${i} square in room ${room}`);
+        io.to(room).emit('clickReceived', click);
     })
 
-    socket.on('playAgain', room_id => {
-        io.to(room_id).emit('Play again')
+    socket.on('playAgain', room => {
+        io.to(room).emit('Play again')
     })
 })
 
